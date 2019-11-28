@@ -1,0 +1,25 @@
+stages:
+- tests
+- build
+
+test:ltr:
+  stage: tests
+  script:
+    - make docker-test FLAVOR=ltr
+  tags:
+    - factory
+
+test:release:
+  stage: tests
+  script:
+    - make docker-test FLAVOR=release
+  tags:
+    - factory
+
+build:
+  stage: build
+  script:
+    - make dist deliver
+  tags:
+    - factory
+

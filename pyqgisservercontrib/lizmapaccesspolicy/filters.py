@@ -126,6 +126,7 @@ class PolicyManager:
  
         # Set policy rules
         self._rules = rules
+        LOGGER.debug("# Lizmap Policy RULES %s", rules)
 
     def load( self, configfile: str) -> None:
         """ Load policy configuration
@@ -183,12 +184,14 @@ class PolicyManager:
         if user:   self.add_policy_for( 'u__'+user, handler, request )
         if groups:
             for group in groups.split(','):
-                self.add_policy_for( 'g__'+group, handler, request )
+                self.add_policy_for( 'g__'+group.strip(), handler, request )
         # Add global rules
         self.add_policy_for( GROUP_ALL, handler, request )
 
-        LOGGER.error("###################### ALLOW %s", handler.accesspolicy._allow)
-        LOGGER.error("###################### DENY %s", handler.accesspolicy._deny)
+        LOGGER.debug("# Lizmap policy USER: %s", user)
+        LOGGER.debug("# Lizmap policy GROUPS: %s", groups)
+        LOGGER.debug("# Lizmap policy ALLOW %s", handler.accesspolicy._allow)
+        LOGGER.debug("# Lizmap policy DENY  %s", handler.accesspolicy._deny)
 
 
 def register_wpsfilters() -> None:
