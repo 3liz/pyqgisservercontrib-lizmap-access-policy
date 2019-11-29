@@ -49,10 +49,10 @@ LOGGER = logging.getLogger('SRVLOG')
 YAMLData = TypeVar('YAMLData')
 
 
-class LizmapAclError(Exception):
+class LizmapPolicyError(Exception):
     pass
 
-ACLPolicy = namedtuple("ACLPolicy", ('allow','deny','groups','users','maps'))
+PolicyRule = namedtuple("PolicyRule", ('allow','deny','groups','users','maps'))
 
 def _to_list( arg ):
     """ Convert an argument to list
@@ -62,13 +62,13 @@ def _to_list( arg ):
     elif isinstance(arg,str):
         return arg.split(',')
     else:
-        raise LizmapAclError("Expecting 'list' not %s" % type(s))
+        raise LizmapPolicyError("Expecting 'list' not %s" % type(s))
 
 
-def new_ACLPolicy( allow=None, deny=None, groups=[], users=[], maps=[] ):
-    """ Construct a ACLPolicy object
+def new_PolicyRule( allow=None, deny=None, groups=[], users=[], maps=[] ):
+    """ Construct a PolicyRule object
     """
-    return ACLPolicy( allow  = allow,
+    return PolicyRule( allow  = allow,
                       deny   = deny,
                       groups = _to_list(groups),
                       users  = _to_list(users),
@@ -101,15 +101,16 @@ class PolicyManager:
         """
         """
         # Load rule from main config policies
-        policies = [new_ACLPolicy(**kw) for kw in config.get('policies',[])]
+        policies = [new_PolicyRule(**kw) for kw in config.get('policies',[])]
 
         # Load included policies
         for incl in config.get('include_policies',[]):
             for path in rootd.glob(incl):
+                LOGGER.info("Policy: Opening policy rules: %s", path.as_posix())
                 with path.open('r') as f:
                     acs = yaml.safe_load(f)
                 # Add policies
-                policies.extend( new_ACLPolicy(**kw) for kw in acs )
+                policies.extend( new_PolicyRule(**kw) for kw in acs )
 
         rules = { GROUP_ALL: [] }
 
@@ -131,7 +132,7 @@ class PolicyManager:
     def load( self, configfile: str) -> None:
         """ Load policy configuration
         """
-        LOGGER.info("Reading Lizmap Policy configuration %s", configfile)
+        LOGGER.info("Policy: Reading Lizmap Policy configuration %s", configfile)
         with open(configfile,'r') as f:
             config = yaml.safe_load(f)
         
@@ -145,10 +146,10 @@ class PolicyManager:
                         lambda modified_files: self.load(configfile), 
                         check_time=check_time)
             if not self._autoreload.is_running():
-                LOGGER.info("Enabling Lizmap Policy autoreload")
+                LOGGER.info("Policy: Enabling Lizmap Policy autoreload")
                 self._autoreload.start()
         elif self._autoreload is not None and self._autoreload.is_running():
-            LOGGER.info("Disabling Lizmap Policy autoreload")
+            LOGGER.info("Policy: Disabling Lizmap Policy autoreload")
             self._autoreload.stop()            
 
     def add_policy_for(self, name:str, handler: RequestHandler, request: 'HTTPRequest' ) -> None:

@@ -23,6 +23,6 @@ policies:
 
 # Include other policies
 include_policies:
-    - policy/*/*.yml
+    - policy/*.yml
 
 
