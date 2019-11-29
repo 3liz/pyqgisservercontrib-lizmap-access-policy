@@ -24,7 +24,7 @@ SCRIPTS=./tests/docker
 
 local:
 	rm -rf $$(pwd)/.local
-	mkdir -p  $$(pwd)/.local  $(LOCAL_HOME)/.cache
+	mkdir -p  $(LOCAL_HOME)/.cache
 
 WORKERS:=1
 
@@ -32,10 +32,9 @@ QGIS_WPSIMAGE=$(REGISTRY_PREFIX)qgis-wps:$(FLAVOR)
 
 test: local
 	docker run --rm --name qgis-wps-test-$(FLAVOR)-$(COMMITID) -w /src \
-		-u $(BECOME_USER) \
 		-v $(SRCDIR):/src \
-		-v $$(pwd)/.local:/.local \
 		-v $(LOCAL_HOME)/.cache:/.cache \
+		-e BECOME_USER=$(BECOME_USER) \
 		-e PIP_CACHE_DIR=/.cache \
 		-e QGSRV_LIZMAP_POLICY=/src/tests/policy.yml \
 		-e PYTEST_ADDOPTS="$(PYTEST_ADDOPTS)" \
@@ -48,10 +47,9 @@ test: local
 
 run: local
 	docker run --rm --name qgis-wps-test-$(FLAVOR)-$(COMMITID) -w /src \
-		-u $(BECOME_USER) \
 		-v $(SRCDIR):/src \
-		-v $$(pwd)/.local:/.local \
 		-v $(LOCAL_HOME)/.cache:/.cache \
+		-e BECOME_USER=$(BECOME_USER) \
 		-e PIP_CACHE_DIR=/.cache \
 		-e WORKERS=$(WORKERS) \
 		-e QGSRV_LIZMAP_POLICY=/src/tests/policy.yml \
