@@ -36,11 +36,11 @@ test: local
 		-v $(LOCAL_HOME)/.cache:/.cache \
 		-e BECOME_USER=$(BECOME_USER) \
 		-e PIP_CACHE_DIR=/.cache \
-		-e QGSRV_LIZMAP_POLICY=/src/tests/policy.yml \
+		-e QGSWPS_LIZMAP_POLICY=/src/tests/policy.yml \
 		-e PYTEST_ADDOPTS="$(PYTEST_ADDOPTS)" \
-		-e QYWPS_CACHE_ROOTDIR=/src/tests/data \
-		-e QYWPS_PROCESSING_PROVIDERS_MODULE_PATH=/src/tests/unittests \
-		-e QYWPS_SERVER_HTTP_PROXY=yes \
+		-e QGSWPS_CACHE_ROOTDIR=/src/tests/data \
+		-e QGSWPS_PROCESSING_PROVIDERS_MODULE_PATH=/src/tests/unittests \
+		-e QGSWPS_SERVER_HTTP_PROXY=yes \
 		-e QGIS_OPTIONS_PATH=/src/tests/qgis \
 		--entrypoint $(SCRIPTS)/run-tests.sh \
 		$(QGIS_WPSIMAGE)
@@ -52,13 +52,13 @@ run: local
 		-e BECOME_USER=$(BECOME_USER) \
 		-e PIP_CACHE_DIR=/.cache \
 		-e WORKERS=$(WORKERS) \
-		-e QGSRV_LIZMAP_POLICY=/src/tests/policy.yml \
+		-e QGSWPS_LIZMAP_POLICY=/src/tests/policy.yml \
 		-e PYTEST_ADDOPTS="$(PYTEST_ADDOPTS)" \
-		-e QYWPS_CACHE_ROOTDIR=/src/tests/data \
-		-e QYWPS_PROCESSING_PROVIDERS_MODULE_PATH=/src/tests/unittests \
-		-e QYWPS_SERVER_HTTP_PROXY=yes \
+		-e QGSWPS_CACHE_ROOTDIR=/src/tests/data \
+		-e QGSWPS_PROCESSING_PROVIDERS_MODULE_PATH=/src/tests/unittests \
+		-e QGSWPS_SERVER_HTTP_PROXY=yes \
 		-e QGIS_OPTIONS_PATH=/src/tests/qgis \
-		-e QYWPS_LOGLEVEL=DEBUG \
+		-e QGSWPS_LOGLEVEL=DEBUG \
 		--entrypoint $(SCRIPTS)/run-server.sh \
 		$(QGIS_WPSIMAGE)
 

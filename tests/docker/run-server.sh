@@ -29,7 +29,9 @@ export QGIS_DISABLE_MESSAGE_HOOKS=1
 export QGIS_NO_OVERRIDE_IMPORT=1
 
 export FAKEREDIS=yes
+export QGSWPS_SERVER_PARALLELPROCESSES=$WORKERS
 
 # Run new tests
-exec wpsserver -w $WORKERS -p 8080 --chdir tests/unittests
+cd tests/unittests
+exec wpsserver -p 8080
 

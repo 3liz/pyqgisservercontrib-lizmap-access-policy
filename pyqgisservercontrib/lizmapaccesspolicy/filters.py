@@ -41,7 +41,8 @@ from typing import Mapping, TypeVar, Any
 from pathlib import Path
 from collections import namedtuple
 
-from .watchfiles import watchfiles
+from pyqgisservercontrib.core.watchfiles import watchfiles
+from pyqgisservercontrib.core.filters import blockingfilter
 
 LOGGER = logging.getLogger('SRVLOG')
 
@@ -80,8 +81,8 @@ GROUP_ALL='g__all'
 class PolicyManager:
     
     @classmethod
-    def initialize( cls, configfile: str, exit_on_error: bool=True ) -> 'ACLManager':
-        """ Create ACL manager
+    def initialize( cls, configfile: str, exit_on_error: bool=True ) -> 'PolicyManager':
+        """ Create policy manager
         """
         try:
             return PolicyManager(configfile)
@@ -195,13 +196,18 @@ class PolicyManager:
         LOGGER.debug("# Lizmap policy DENY  %s", handler.accesspolicy._deny)
 
 
-def register_wpsfilters() -> None:
-    """ Register filters for WPS
+def register_policy( collection, wpspolicy=False ) -> None:
+    """ Register filters
     """
-    from pyqgiswps.filters import blockingfilter
-    from pyqgiswps.config import get_env_config
+    from  pyqgisservercontrib.core import componentmanager
 
-    with_policy= get_env_config('lizmap','policy','QGSRV_LIZMAP_POLICY')
+    if not wpspolicy:
+        LOGGER.info("Lizmap policy is used only with wps policy")
+        return 
+
+    configservice = componentmanager.get_service('@3liz.org/config-service;1')
+
+    with_policy = configservice.get('lizmap','policy')
     if with_policy:
         mngr = PolicyManager.initialize(with_policy)
        
@@ -209,8 +215,6 @@ def register_wpsfilters() -> None:
         def _filter( handler: RequestHandler ) -> None:
             mngr.add_policy( handler )
 
-        return [_filter]
-    
-    return []
+        collection.append(_filter)
 
 

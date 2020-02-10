@@ -1,7 +1,6 @@
 """
     Test profiles
 """
-from pyqgiswps.app import WPSProcess, Service
 from pyqgiswps.tests import HTTPTestCase
 from pyqgiswps.executors.processingexecutor import ProcessingExecutor
 
@@ -12,16 +11,14 @@ class Tests(HTTPTestCase):
         """
         uri = ('?service=WPS&request=Execute&Identifier=pyqgiswps_test:testcopylayer&Version=1.0.0&MAP=france_parts'
                    '&DATAINPUTS=INPUT=france_parts%3BOUTPUT=france_parts_2')
-        client = self.client_for(Service(executor=ProcessingExecutor()))
-        rv = client.get(uri, headers={ 'X-Lizmap-User-Groups': 'operator,admin' })
+        rv = self.client.get(uri, headers={ 'X-Lizmap-User-Groups': 'operator,admin' })
         assert rv.status_code == 403
 
     def test_getcapabilities_1(self):
         """ Test access policy
         """
         uri = ('?service=WPS&request=GetCapabilities')
-        client = self.client_for(Service(executor=ProcessingExecutor()))
-        rv = client.get(uri, headers={ 'X-Lizmap-User-Groups': 'operator,admin' })
+        rv = self.client.get(uri, headers={ 'X-Lizmap-User-Groups': 'operator,admin' })
         assert rv.status_code == 200
 
         exposed = rv.xpath_text('/wps:Capabilities'
@@ -35,8 +32,7 @@ class Tests(HTTPTestCase):
         """ Test access policy
         """
         uri = ('?service=WPS&request=GetCapabilities&MAP=france_parts')
-        client = self.client_for(Service(executor=ProcessingExecutor()))
-        rv = client.get(uri, headers={ 'X-Lizmap-User-Groups': 'operator,admin' })
+        rv = self.client.get(uri, headers={ 'X-Lizmap-User-Groups': 'operator,admin' })
         assert rv.status_code == 200
 
         exposed = rv.xpath_text('/wps:Capabilities'
