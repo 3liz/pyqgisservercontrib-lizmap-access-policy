@@ -9,8 +9,8 @@ echo "-- HOME is $HOME"
 
 echo "Installing python packages..."
 pip3 install -U --user -q setuptools
-pip3 install --no-warn-script-location --user --prefer-binary $PIP_OPTIONS -r requirements.tests
-pip3 install --no-warn-script-location --user --prefer-binary $PIP_OPTIONS -r requirements.txt 
+pip3 install --no-warn-script-location --user --prefer-binary  -r requirements.tests
+pip3 install --no-warn-script-location --user --prefer-binary --no-cache-dir $PIP_OPTIONS  -r requirements.txt 
 
 pip3 install --user -e ./ 
 
