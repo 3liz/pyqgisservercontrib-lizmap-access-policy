@@ -24,18 +24,27 @@ SCRIPTS=./tests/docker
 
 local:
 	rm -rf $$(pwd)/.local
-	mkdir -p  $(LOCAL_HOME)/.cache
+	mkdir -p  $$(pwd)/.local  $(LOCAL_HOME)/.cache
 
 WORKERS:=1
 
-QGIS_WPSIMAGE=$(REGISTRY_PREFIX)qgis-wps:$(FLAVOR)
+ifdef PYPISERVER
+PYPISERVER_SCHEME ?= https
+PIP_OPTIONS="--extra-index-url=$(PYPISERVER_SCHEME)://$(PYPISERVER) --trusted-host=$(PYPISERVER) --pre"
+else
+$(error PYPIPSERVER is not defined)
+endif
+
+QGIS_IMAGE=$(REGISTRY_PREFIX)qgis-platform:$(FLAVOR)
 
 test: local
-	docker run --rm --name qgis-wps-test-$(FLAVOR)-$(COMMITID) -w /src \
+	docker run --rm --name qgis-wps-test-$(FLAVOR)-$(COMMITID) $(DOCKER_BUILD_ARGS) -w /src \
+		-u $(BECOME_USER) \
 		-v $(SRCDIR):/src \
 		-v $(LOCAL_HOME)/.cache:/.cache \
-		-e BECOME_USER=$(BECOME_USER) \
+		-v $$(pwd)/.local:/.local \
 		-e PIP_CACHE_DIR=/.cache \
+		-e PIP_OPTIONS=$(PIP_OPTIONS) \
 		-e QGSWPS_LIZMAP_POLICY=/src/tests/policy.yml \
 		-e PYTEST_ADDOPTS="$(PYTEST_ADDOPTS)" \
 		-e QGSWPS_CACHE_ROOTDIR=/src/tests/data \
@@ -43,14 +52,16 @@ test: local
 		-e QGSWPS_SERVER_HTTP_PROXY=yes \
 		-e QGIS_OPTIONS_PATH=/src/tests/qgis \
 		--entrypoint $(SCRIPTS)/run-tests.sh \
-		$(QGIS_WPSIMAGE)
+		$(QGIS_IMAGE)
 
 run: local
-	docker run --rm --name qgis-wps-test-$(FLAVOR)-$(COMMITID) -w /src \
+	docker run --rm --name qgis-wps-test-$(FLAVOR)-$(COMMITID) $(DOCKER_BUILD_ARGS) -w /src \
+		-u $(BECOME_USER) \
 		-v $(SRCDIR):/src \
 		-v $(LOCAL_HOME)/.cache:/.cache \
-		-e BECOME_USER=$(BECOME_USER) \
+		-v $$(pwd)/.local:/.local \
 		-e PIP_CACHE_DIR=/.cache \
+		-e PIP_OPTIONS=$(PIP_OPTIONS) \
 		-e WORKERS=$(WORKERS) \
 		-e QGSWPS_LIZMAP_POLICY=/src/tests/policy.yml \
 		-e PYTEST_ADDOPTS="$(PYTEST_ADDOPTS)" \
@@ -60,6 +71,6 @@ run: local
 		-e QGIS_OPTIONS_PATH=/src/tests/qgis \
 		-e QGSWPS_LOGLEVEL=DEBUG \
 		--entrypoint $(SCRIPTS)/run-server.sh \
-		$(QGIS_WPSIMAGE)
+		$(QGIS_IMAGE)
 
 

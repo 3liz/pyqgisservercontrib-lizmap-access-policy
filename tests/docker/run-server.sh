@@ -2,28 +2,19 @@
 
 set -e
 
-# Qgis need a HOME
-export HOME=/home/qgis
-
-if [ "$(id -u)" = '0' ]; then
-
-echo "Installing python packages..."
-pip3 install -U -q setuptools
-pip3 install --no-warn-script-location -q --prefer-binary -r requirements.tests
-pip3 install --no-warn-script-location -q --prefer-binary -r requirements.txt 
-
-pip3 install -e ./ 
-
-echo "Installed contributions: $(pip list -l | grep pyqgiservercontrib)"
-
-mkdir -p $HOME
-chown -R $BECOME_USER:$BECOME_USER $HOME
-
-exec gosu $BECOME_USER:$BECOME_USER  "$BASH_SOURCE" $@
-
-fi
+# Add /.local to path
+export PATH=$PATH:/.local/bin
 
 echo "-- HOME is $HOME"
+
+echo "Installing python packages..."
+pip3 install -U --user -q setuptools
+pip3 install --no-warn-script-location --user -q --prefer-binary -r requirements.tests
+pip3 install --no-warn-script-location --user -q --prefer-binary -r requirements.txt 
+
+pip3 install --user -e ./ 
+
+echo "Installed contributions: $(pip list -l | grep pyqgiservercontrib)"
 
 export QGIS_DISABLE_MESSAGE_HOOKS=1
 export QGIS_NO_OVERRIDE_IMPORT=1

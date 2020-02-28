@@ -207,7 +207,7 @@ def register_policy( collection, wpspolicy=False ) -> None:
 
     configservice = componentmanager.get_service('@3liz.org/config-service;1')
 
-    with_policy = configservice.get('lizmap','policy')
+    with_policy = configservice.get('lizmap','policy', fallback=None)
     if with_policy:
         mngr = PolicyManager.initialize(with_policy)
        

@@ -16,6 +16,13 @@ test:release:
   tags:
     - factory
 
+test:3.4:
+  stage: tests
+  script:
+    - make docker-test FLAVOR=3.4
+  tags:
+    - factory
+
 build:
   stage: build
   script:
