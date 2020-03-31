@@ -21,6 +21,12 @@ policies:
       maps:  
         - 'france_parts'
 
+    # Policy for user john only on map 'france_parts' with
+    # testsimplevalue processes
+    - allow: 'pyqgiswps_test:testcopylayer'
+      users: john 
+      maps:  'france_parts'
+
 # Include other policies
 include_policies:
     - policy/*.yml
