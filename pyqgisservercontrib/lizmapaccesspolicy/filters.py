@@ -167,6 +167,7 @@ class PolicyManager:
                 # No map defined forget that rule
                 if not test: 
                     continue
+                LOGGER.debug("################# %s", test)
                 test = test[-1]
                 if isinstance(test,bytes):
                     test = test.decode()

@@ -69,3 +69,34 @@ class Tests(HTTPTestCase):
         assert rv.status_code == 200
 
 
+    def test_subfolder_map(self):
+        """ Test access policy
+        """
+        uri = ('?service=WPS&request=GetCapabilities&MAP=others/france_parts')
+        rv = self.client.get(uri, headers={ 'X-Lizmap-User': 'jack' })
+        assert rv.status_code == 200
+
+        exposed = rv.xpath_text('/wps:Capabilities'
+                                  '/wps:ProcessOfferings'
+                                  '/wps:Process'
+                                  '/ows:Identifier')
+        # Check that there is only one exposed pyqgiswps_test
+        idents = [x for x in exposed.split() if x.startswith('pyqgiswps_test:')]
+        assert idents == ['pyqgiswps_test:testcopylayer']
+
+
+    def test_encoded_url(self):
+        """ Test access policy
+        """
+        uri = ('?service=WPS&request=GetCapabilities&MAP=others%2Ffrance_parts')
+        rv = self.client.get(uri, headers={ 'X-Lizmap-User': 'jack' })
+        assert rv.status_code == 200
+
+        exposed = rv.xpath_text('/wps:Capabilities'
+                                  '/wps:ProcessOfferings'
+                                  '/wps:Process'
+                                  '/ows:Identifier')
+        # Check that there is only one exposed pyqgiswps_test
+        idents = [x for x in exposed.split() if x.startswith('pyqgiswps_test:')]
+        assert idents == ['pyqgiswps_test:testcopylayer']
+

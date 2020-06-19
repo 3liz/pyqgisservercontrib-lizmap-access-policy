@@ -5,16 +5,8 @@ def parse_requirements( filename ):
     with open( filename ) as fp:
         return list(filter(None, (r.strip('\n ').partition('#')[0] for r in fp.readlines())))
 
-def load_source(name, path):
-    from importlib.util import spec_from_file_location, module_from_spec
-    spec = spec_from_file_location(name, path)
-    mod  = module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
-
-VER = load_source("version", 'pyqgisservercontrib/lizmapaccesspolicy/version.py')
-
-version_tag = "{}".format(VER.__version__)
+VERSION="1.0.2"
+DESCRIPTION="Qgis WPS server lizmap user acls filters"
 
 kwargs = {}
 
@@ -23,17 +15,16 @@ with open('README.md') as f:
 
 # Parse requirement file and transform it to setuptools requirements'''
 requirements = 'requirements.txt'
-if os.path.exists(requirements):
-    kwargs['install_requires']=parse_requirements(requirements)
+kwargs['install_requires']=parse_requirements(requirements)
 
 setup(
     name='pyqgiservercontrib-lizmap-access-policy',
-    version=version_tag,
+    version=VERSION,
     author='3Liz',
     author_email='infos@3liz.org',
     maintainer='David Marteau',
     maintainer_email='dmarteau@3liz.org',
-    description=VER.__description__,
+    description=DESCRIPTION,
     url='https://github.com/pyqgiservercontrib-lizmap-access-policy',
     python_requires=">=3.5",
     packages=find_namespace_packages(include=['pyqgisservercontrib.*']),

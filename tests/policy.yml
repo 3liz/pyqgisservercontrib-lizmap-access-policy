@@ -22,10 +22,18 @@ policies:
         - 'france_parts'
 
     # Policy for user john only on map 'france_parts' with
-    # testsimplevalue processes
+    # testcopylayer processes
     - allow: 'pyqgiswps_test:testcopylayer'
       users: john 
       maps:  'france_parts'
+
+    # Policy for user jack only on subfolder '*/france_parts' with
+    # testcopylayer processes
+    - allow: 'pyqgiswps_test:testcopylayer'
+      users: jack
+      maps:  '*/france_parts'
+
+
 
 # Include other policies
 include_policies:
