@@ -207,6 +207,7 @@ def register_policy( collection, wpspolicy=False ) -> None:
         return 
 
     configservice = componentmanager.get_service('@3liz.org/config-service;1')
+    configservice.add_section('lizmap')
 
     with_policy = configservice.get('lizmap','policy', fallback=None)
     if with_policy:

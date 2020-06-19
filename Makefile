@@ -45,3 +45,6 @@ clean:
 docker-%:
 	$(MAKE) -C tests/docker $* FLAVOR=$(FLAVOR)
 
+
+test: docker-test
+
