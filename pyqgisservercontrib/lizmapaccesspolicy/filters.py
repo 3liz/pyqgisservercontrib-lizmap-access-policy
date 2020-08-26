@@ -81,20 +81,20 @@ GROUP_ALL='g__all'
 class PolicyManager:
     
     @classmethod
-    def initialize( cls, configfile: str, exit_on_error: bool=True ) -> 'PolicyManager':
+    def initialize( cls, configfile: Path, exit_on_error: bool=True ) -> 'PolicyManager':
         """ Create policy manager
         """
         try:
             return PolicyManager(configfile)
-        except Exception:
-            LOGGER.error("Failed to load lizmap policy %s: %s")
+        except Exception as err:
+            LOGGER.error("Failed to initialize lizmap policy %s", configfile )
             if exit_on_error:
                 traceback.print_exc()
                 sys.exit(1)
             else:
                 raise
 
-    def __init__(self, configfile: str ) -> None:
+    def __init__(self, configfile: Path ) -> None:
         self._autoreload = None
         self.load(configfile)
 
@@ -130,20 +130,20 @@ class PolicyManager:
         self._rules = rules
         LOGGER.debug("# Lizmap Policy RULES %s", rules)
 
-    def load( self, configfile: str) -> None:
+    def load( self, configfile: Path) -> None:
         """ Load policy configuration
         """
         LOGGER.info("Policy: Reading Lizmap Policy configuration %s", configfile)
-        with open(configfile,'r') as f:
+        with configfile.open() as f:
             config = yaml.safe_load(f)
         
-        self.parse_policy(Path(configfile).parent, config)
+        self.parse_policy(configfile.parent, config)
 
         # Configure auto reload
         if config.get('autoreload', False):
             if self._autoreload is None:
                 check_time = config.get('autoreload_check_time', 3000)
-                self._autoreload = watchfiles([configfile], 
+                self._autoreload = watchfiles([configfile.as_posix()], 
                         lambda modified_files: self.load(configfile), 
                         check_time=check_time)
             if not self._autoreload.is_running():
@@ -211,7 +211,13 @@ def register_policy( collection, wpspolicy=False ) -> None:
 
     with_policy = configservice.get('lizmap','policy', fallback=None)
     if with_policy:
-        mngr = PolicyManager.initialize(with_policy)
+
+        policyfile = Path(with_policy)
+        if not policyfile.exists():
+            LOGGER.error("Lizmap Policy file is defined but does not exists: %s", policyfile)
+            return
+            
+        mngr = PolicyManager.initialize(policyfile)
        
         @blockingfilter()
         def _filter( handler: RequestHandler ) -> None:
