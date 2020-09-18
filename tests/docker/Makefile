@@ -5,6 +5,7 @@ SHELL:=bash
 COMMITID=$(shell git rev-parse --short HEAD)
 
 FLAVOR:=ltr
+PYQGSWPS_MAX_VERSION:=1.5
 
 REGISTRY_URL ?= 3liz
 REGISTRY_PREFIX=$(REGISTRY_URL)/
@@ -50,6 +51,7 @@ test: local
 		-e QGSWPS_PROCESSING_PROVIDERS_MODULE_PATH=/src/tests/unittests \
 		-e QGSWPS_SERVER_HTTP_PROXY=yes \
 		-e QGIS_OPTIONS_PATH=/src/tests/qgis \
+		-e PYQGSWPS_MAX_VERSION=$(PYQGSWPS_MAX_VERSION) \
 		--entrypoint $(SCRIPTS)/run-tests.sh \
 		$(QGIS_IMAGE)
 
@@ -69,6 +71,7 @@ run: local
 		-e QGSWPS_SERVER_HTTP_PROXY=yes \
 		-e QGIS_OPTIONS_PATH=/src/tests/qgis \
 		-e QGSWPS_LOGLEVEL=DEBUG \
+		-e PYQGSWPS_MAX_VERSION=$(PYQGSWPS_MAX_VERSION) \
 		--entrypoint $(SCRIPTS)/run-server.sh \
 		$(QGIS_IMAGE)
 

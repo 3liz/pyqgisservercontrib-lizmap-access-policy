@@ -1,3 +1,4 @@
+py-qgis-wps < ${PYQGSWPS_MAX_VERSION}
 pytest
 fakeredis
 
