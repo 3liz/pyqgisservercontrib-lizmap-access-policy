@@ -5,14 +5,14 @@ stages:
 test:ltr:
   stage: tests
   script:
-    - make docker-test FLAVOR=ltr PYQGSWPS_MAX_VERSION=1.5
+    - make test FLAVOR=ltr
   tags:
     - factory
 
 test:release:
   stage: tests
   script:
-    - make docker-test FLAVOR=release
+    - make test FLAVOR=release
   tags:
     - factory
 

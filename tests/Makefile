@@ -18,13 +18,15 @@ ifndef LOCAL_HOME
 	LOCAL_HOME=$(shell pwd)
 endif
 
-SRCDIR=$(shell realpath ../..)
+SRCDIR=$(shell realpath ..)
 
-SCRIPTS=./tests/docker
+SCRIPTS=./tests
 
 local:
-	rm -rf $$(pwd)/.local
 	mkdir -p  $$(pwd)/.local  $(LOCAL_HOME)/.cache
+
+clean:
+	rm -rf $$(pwd)/.local $(LOCAL_HOME)/.cache
 
 WORKERS:=1
 
@@ -64,7 +66,6 @@ run: local
 		-e PIP_CACHE_DIR=/.cache \
 		-e PIP_OPTIONS=$(PIP_OPTIONS) \
 		-e WORKERS=$(WORKERS) \
-		-e QGSWPS_LIZMAP_POLICY=/src/tests/policy.yml \
 		-e PYTEST_ADDOPTS="$(PYTEST_ADDOPTS)" \
 		-e QGSWPS_CACHE_ROOTDIR=/src/tests/data \
 		-e QGSWPS_PROCESSING_PROVIDERS_MODULE_PATH=/src/tests/unittests \

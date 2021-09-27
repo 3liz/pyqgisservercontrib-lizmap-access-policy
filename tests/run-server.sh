@@ -24,5 +24,5 @@ export QGSWPS_SERVER_PARALLELPROCESSES=$WORKERS
 
 # Run new tests
 cd tests/unittests
-exec wpsserver -p 8080
+exec wpsserver -p 8888
 
